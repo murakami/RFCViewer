@@ -34,15 +34,15 @@ typedef void (^RFCResponseParserCompletionHandler)(RFCResponseParser *parser);
 @interface RFCResponseParser : NSObject
 
 @property (assign, readonly, nonatomic) RFCNetworkSate          networkState;
-@property (strong, nonatomic) NSString                          *indexUrlString;
-@property (strong, nonatomic) NSString                          *baseUrlString;
+@property (assign, nonatomic) NSUInteger                        index;
 @property (strong, nonatomic) NSError                           *error;
+@property (strong, nonatomic) NSOperationQueue                  *queue;
 @property (weak, nonatomic) id<RFCResponseParserDelegate>       delegate;
 @property (copy, nonatomic)RFCResponseParserCompletionHandler   completionHandler;
 @property (strong, readonly, nonatomic) NSDictionary            *indexDictionary;
 @property (strong, readonly, nonatomic) NSString                *rfc;
 
-- (void)parseWithIndex:(NSUInteger)index queue:(NSOperationQueue *)queue;
+- (void)parse;
 - (void)cancel;
 
 @end

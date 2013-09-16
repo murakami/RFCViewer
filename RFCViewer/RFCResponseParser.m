@@ -6,14 +6,13 @@
 //  Copyright (c) 2013年 Bitz Co., Ltd. All rights reserved.
 //
 
+#import "Document.h"
 #import "RFCResponseParser.h"
 
 @interface RFCResponseParser () <NSURLConnectionDataDelegate>
 @property (assign, readwrite, nonatomic) RFCNetworkSate networkState;
 @property (strong, nonatomic) NSURLConnection           *urlConnection;
 @property (strong, nonatomic) NSMutableData             *downloadedData;
-@property (strong, nonatomic) NSOperationQueue          *queue;
-- (void)_parse;
 - (void)_notifyParserDidFinishLoading;
 - (void)_notifyParserDidFailWithError:(NSError*)error;
 - (NSError *)_errorWithCode:(NSInteger)code localizedDescription:(NSString *)localizedDescription;
@@ -22,14 +21,13 @@
 @implementation RFCResponseParser
 
 @synthesize networkState = _networkState;
-@synthesize indexUrlString = _indexUrlString;
-@synthesize baseUrlString = _baseUrlString;
+@synthesize index = _index;
 @synthesize error = _error;
+@synthesize queue = _queue;
 @synthesize delegate = _delegate;
 @synthesize completionHandler = _completionHandler;
 @synthesize urlConnection = _urlConnection;
 @synthesize downloadedData = _downloadedData;
-@synthesize queue = _queue;
 
 - (id)init
 {
@@ -37,14 +35,13 @@
     self = [super init];
     if (self) {
         _networkState = kRFCNetworkStateNotConnected;
-        _indexUrlString = @"http://www.rfc-editor.org/rfc/rfc-index.txt";
-        _baseUrlString = @"http://www.ietf.org/rfc";
+        _index = 0;
         _error = nil;
+        _queue = nil;
         _delegate = nil;
         _completionHandler = NULL;
         _urlConnection = nil;
         _downloadedData = nil;
-        _queue = nil;
     }
     return self;
 }
@@ -53,29 +50,25 @@
 {
     DBGMSG(@"%s", __func__);
     self.networkState = kRFCNetworkStateNotConnected;
-    self.indexUrlString = nil;
-    self.baseUrlString = nil;
+    self.index = 0;
     self.error = nil;
+    self.queue = nil;
     self.delegate = nil;
     self.completionHandler = NULL;
     self.urlConnection = nil;
     self.downloadedData = nil;
-    self.queue = nil;
 }
 
-- (void)parseWithIndex:(NSUInteger)index queue:(NSOperationQueue *)queue
+- (void)parse
 {
     DBGMSG(@"%s", __func__);
     NSString    *urlString = nil;
-    self.queue = queue;
     
-    if (index == 0) {
-        urlString = self.indexUrlString;
+    if (self.index == 0) {
+        urlString = [Document sharedDocument].indexUrlString;
     }
     else {
-        NSMutableString *urlMutableString = [[NSMutableString alloc] initWithFormat:@"%@/rfc%04u.txt",
-                                             self.baseUrlString, index];
-        urlString = urlMutableString;
+        urlString = [[Document sharedDocument] rfcUrlStringWithIndex:self.index];
     }
     
     NSURLRequest    *urlRequest = nil;
@@ -86,12 +79,12 @@
             urlRequest = [NSURLRequest requestWithURL:url];
         }
     }
+    DBGMSG(@"%s urlString(%@)", __func__, urlString);
     
     if (! urlRequest) {
-        self.error = [self _errorWithCode:kRFCResponseParserGenericError localizedDescription:@"NSURLRequestの生成に失敗しました。"];
-        if (self.completionHandler) {
-            self.completionHandler(self);
-        }
+        self.networkState = kRFCNetworkStateError;
+        self.error = [self _errorWithCode:kRFCResponseParserGenericError
+                     localizedDescription:@"NSURLRequestの生成に失敗しました。"];
         return;
     }
     
@@ -100,7 +93,7 @@
     self.urlConnection = [[NSURLConnection alloc] initWithRequest:urlRequest
                                                          delegate:self
                                                  startImmediately:NO];
-    [self.urlConnection setDelegateQueue: self.queue];
+    [self.urlConnection setDelegateQueue:self.queue];
     
     [self willChangeValueForKey:@"networkState"];
     self.networkState = kRFCNetworkStateInProgress;
@@ -123,9 +116,6 @@
     if ([self.delegate respondsToSelector:@selector(parserDidCancel:)]) {
         [self.delegate parserDidCancel:self];
     }
-    if (self.completionHandler) {
-        self.completionHandler(self);
-    }
     
     self.urlConnection = nil;
 }
@@ -133,6 +123,127 @@
 - (NSDictionary *)indexDictionary
 {
     DBGMSG(@"%s", __func__);
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    
+    NSString	*indexString = nil;
+	NSString	*parsedString = nil;
+	NSRange		range, subRange;
+	NSUInteger	length;
+    BOOL        isIndex = NO;
+    NSMutableString *rfcString = nil;
+    
+	indexString = [[NSString alloc] initWithData:self.downloadedData
+										encoding:NSUTF8StringEncoding];
+	length = [indexString length];
+	range = NSMakeRange(0, length);
+	while (0 < range.length) {
+        /* 行単位の取り出し */
+		subRange = [indexString lineRangeForRange:NSMakeRange(range.location, 0)];
+		parsedString = [indexString substringWithRange:subRange];
+		
+        /* 改行文字削除 */
+		NSCharacterSet	*chSet = nil;
+		NSScanner		*scanner = nil;
+		chSet = [NSCharacterSet characterSetWithCharactersInString:@"\r\n"];
+		scanner = [NSScanner scannerWithString:parsedString];
+		if (![scanner isAtEnd]) {
+			NSString	*line = nil;
+			[scanner scanUpToCharactersFromSet:chSet intoString:&line];
+			parsedString = line;
+		}
+        else {
+            parsedString = @"";
+        }
+        DBGMSG(@"[%@]", parsedString);
+        
+        /* 目次に到達 */
+        if ([parsedString isEqualToString:@"RFC INDEX"]) {
+            isIndex = YES;
+        }
+        else if (! isIndex) {
+        }
+        
+        /* 区切り */
+        else if ([parsedString isEqualToString:@""]) {
+            if (rfcString) {
+                /* 表題の取り出し */
+                DBGMSG(@"%@", rfcString);
+            }
+            rfcString = nil;
+        }
+        
+        /* 先頭 */
+        else {
+            NSRange match = [parsedString rangeOfString:@"^[0-9]{4}+\\s" options:NSRegularExpressionSearch];
+            if (match.location != NSNotFound) {
+                DBGMSG(@">>>>先頭");
+                rfcString = [[NSMutableString alloc] initWithString:parsedString];
+            }
+            else if (rfcString) {
+                [rfcString appendString:parsedString];
+            }
+        }
+        
+#if 0
+		
+		NSString	*scannedName = nil;
+		chSet = nil;
+		scanner = nil;
+		chSet = [NSCharacterSet characterSetWithCharactersInString:@" \t"];
+		scanner = [NSScanner scannerWithString:parsedString];
+		while (![scanner isAtEnd]) {
+			if ([scanner scanUpToCharactersFromSet:chSet intoString:&scannedName]) {
+				NSUInteger	len = [scannedName length];
+				if (len != 4U)
+					continue;
+				NSCharacterSet	*chrSet = [NSCharacterSet decimalDigitCharacterSet];
+				if (![chrSet characterIsMember:[parsedString characterAtIndex:0]]) {
+					continue;
+				}
+				BOOL	fIsDigit = YES;
+				for (NSUInteger i = 0U; i < len; i++) {
+					if (![chrSet characterIsMember:[scannedName characterAtIndex:i]]) {
+						fIsDigit = NO;
+						break;
+					}
+				}
+				
+				if (fIsDigit == YES) {
+					NSFetchRequest	*request = [[NSFetchRequest alloc] init];
+					[request setEntity:[NSEntityDescription
+										entityForName:@"RFCIndex"
+										inManagedObjectContext:self.managedObjectContext]];
+					NSPredicate	*predicate;
+					predicate = [NSPredicate predicateWithFormat:@"number == %d",
+								 [scannedName integerValue]];
+					[request setPredicate:predicate];
+					NSArray	*result;
+					NSError	*error;
+					result = [self.managedObjectContext
+							  executeFetchRequest:request error:&error];
+					if (!result) {
+						//[[NSApplication sharedApplication] presentError:error];
+					}
+					else if (![result count]) {
+						NSLog(@"%ld", [scannedName integerValue]);
+						[self insertCitation:[scannedName integerValue] withTitle:parsedString];
+					}
+					
+					//NSNumber	*index = [[NSNumber alloc] initWithInteger:[scannedName integerValue]];
+					//[indexDictionary setObject:parsedString forKey:index];
+					//[index release];
+					//NSLog(@"%ld %@", [scannedName integerValue], parsedString);
+				}
+			}
+			[scanner scanCharactersFromSet:chSet intoString:nil];
+			break;
+		}
+#endif
+		
+		range.location = NSMaxRange(subRange);
+		range.length -= subRange.length;
+	}
+    return dict;
 }
 
 - (NSString *)rfc
@@ -142,16 +253,71 @@
     return result;
 }
 
-- (void)_parse
+- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response
 {
+    DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    if ([self.delegate respondsToSelector:@selector(parser:didReceiveResponse:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate parser:self didReceiveResponse:response];
+        });
+    }
+}
+
+- (void)connection:(NSURLConnection*)connection didReceiveData:(NSData*)data
+{
+    DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    [self.downloadedData appendData:data];
+    
+    if ([self.delegate respondsToSelector:@selector(parser:didReceiveData:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate parser:self didReceiveData:data];
+        });
+    }
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection*)connection
+{
+    DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    
+    [self willChangeValueForKey:@"networkState"];
+    self.networkState = kRFCNetworkStateFinished;
+    [self didChangeValueForKey:@"networkState"];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self _notifyParserDidFinishLoading];
+    });
+
+    self.urlConnection = nil;
+}
+
+- (void)connection:(NSURLConnection*)connection didFailWithError:(NSError*)error
+{
+    DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    self.error = error;
+    
+    [self willChangeValueForKey:@"networkState"];
+    self.networkState = kRFCNetworkStateError;
+    [self didChangeValueForKey:@"networkState"];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self _notifyParserDidFailWithError:error];
+    });
+    
+    self.urlConnection = nil;
 }
 
 - (void)_notifyParserDidFinishLoading
 {
+    if ([self.delegate respondsToSelector:@selector(parserDidFinishLoading:)]) {
+        [self.delegate parserDidFinishLoading:self];
+    }
 }
 
 - (void)_notifyParserDidFailWithError:(NSError*)error
 {
+    if ([self.delegate respondsToSelector:@selector(parser:didFailWithError:)]) {
+        [self.delegate parser:self didFailWithError:error];
+    }
 }
 
 - (NSError *)_errorWithCode:(NSInteger)code localizedDescription:(NSString *)localizedDescription

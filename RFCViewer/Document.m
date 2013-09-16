@@ -9,6 +9,8 @@
 #import "Document.h"
 
 @interface Document ()
+@property (strong, readwrite, nonatomic) NSString   *indexUrlString;
+@property (strong, nonatomic) NSString              *baseUrlString;
 - (void)_clearDefaults;
 - (void)_updateDefaults;
 - (void)_loadDefaults;
@@ -17,6 +19,8 @@
 @implementation Document
 
 @synthesize version = _version;
+@synthesize indexUrlString = _indexUrlString;
+@synthesize baseUrlString = _baseUrlString;
 
 + (Document *)sharedDocument;
 {
@@ -35,6 +39,8 @@
     self = [super init];
     if (self) {
         _version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+        _indexUrlString = @"http://www.rfc-editor.org/rfc/rfc-index.txt";
+        _baseUrlString = @"http://www.ietf.org/rfc";
     }
     return self;
 }
@@ -43,6 +49,8 @@
 {
     DBGMSG(@"%s", __func__);
     self.version = nil;
+    self.indexUrlString = nil;
+    self.baseUrlString = nil;
 }
 
 - (void)load
@@ -55,6 +63,12 @@
 {
     DBGMSG(@"%s", __func__);
     [self _updateDefaults];
+}
+
+- (NSString *)rfcUrlStringWithIndex:(NSUInteger)index
+{
+    NSString *urlString = [[NSString alloc] initWithFormat:@"%@/rfc%04u.txt", self.baseUrlString, index];
+    return urlString;
 }
 
 - (void)_clearDefaults

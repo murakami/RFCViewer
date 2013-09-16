@@ -6,8 +6,9 @@
 //  Copyright (c) 2013年 Bitz Co., Ltd. All rights reserved.
 //
 
+#import "Document.h"
+#import "Connector.h"
 #import "MasterViewController.h"
-
 #import "DetailViewController.h"
 
 @interface MasterViewController () {
@@ -30,6 +31,10 @@
 
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
     self.navigationItem.rightBarButtonItem = addButton;
+    
+    [[Connector sharedConnector] rfcIndexWithCompletionHandler:^(RFCResponseParser *parser) {
+        parser.indexDictionary;
+    }];
 }
 
 - (void)didReceiveMemoryWarning

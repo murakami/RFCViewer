@@ -27,6 +27,7 @@
 		56A51CFE17E696EF006F9506 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 56A51CFD17E696EF006F9506 /* Document.m */; };
 		56C86ADF17E6A276002B9436 /* Connector.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86ADE17E6A276002B9436 /* Connector.m */; };
 		56C86AE217E6A3E3002B9436 /* RFCResponseParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */; };
+		56C86AE517E73A9E002B9436 /* RFC.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86AE417E73A9E002B9436 /* RFC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,8 @@
 		56C86ADE17E6A276002B9436 /* Connector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connector.m; sourceTree = "<group>"; };
 		56C86AE017E6A3E3002B9436 /* RFCResponseParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFCResponseParser.h; sourceTree = "<group>"; };
 		56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFCResponseParser.m; sourceTree = "<group>"; };
+		56C86AE317E73A9E002B9436 /* RFC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFC.h; sourceTree = "<group>"; };
+		56C86AE417E73A9E002B9436 /* RFC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFC.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +141,8 @@
 				56A51CDD17E5912A006F9506 /* DetailViewController.m */,
 				56A51CFC17E696EF006F9506 /* Document.h */,
 				56A51CFD17E696EF006F9506 /* Document.m */,
+				56C86AE317E73A9E002B9436 /* RFC.h */,
+				56C86AE417E73A9E002B9436 /* RFC.m */,
 				56C86ADD17E6A276002B9436 /* Connector.h */,
 				56C86ADE17E6A276002B9436 /* Connector.m */,
 				56C86AE017E6A3E3002B9436 /* RFCResponseParser.h */,
@@ -305,6 +310,7 @@
 				56A51CFE17E696EF006F9506 /* Document.m in Sources */,
 				56C86ADF17E6A276002B9436 /* Connector.m in Sources */,
 				56C86AE217E6A3E3002B9436 /* RFCResponseParser.m in Sources */,
+				56C86AE517E73A9E002B9436 /* RFC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
