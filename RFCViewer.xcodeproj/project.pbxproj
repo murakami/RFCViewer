@@ -24,6 +24,9 @@
 		56A51CE817E5912A006F9506 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56A51CC017E59129006F9506 /* Foundation.framework */; };
 		56A51CF017E5912A006F9506 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56A51CEE17E5912A006F9506 /* InfoPlist.strings */; };
 		56A51CF317E5912A006F9506 /* RFCViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 56A51CF217E5912A006F9506 /* RFCViewerTests.m */; };
+		56A51CFE17E696EF006F9506 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 56A51CFD17E696EF006F9506 /* Document.m */; };
+		56C86ADF17E6A276002B9436 /* Connector.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86ADE17E6A276002B9436 /* Connector.m */; };
+		56C86AE217E6A3E3002B9436 /* RFCResponseParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +64,12 @@
 		56A51CEF17E5912A006F9506 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		56A51CF117E5912A006F9506 /* RFCViewerTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RFCViewerTests.h; sourceTree = "<group>"; };
 		56A51CF217E5912A006F9506 /* RFCViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RFCViewerTests.m; sourceTree = "<group>"; };
+		56A51CFC17E696EF006F9506 /* Document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
+		56A51CFD17E696EF006F9506 /* Document.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
+		56C86ADD17E6A276002B9436 /* Connector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connector.h; sourceTree = "<group>"; };
+		56C86ADE17E6A276002B9436 /* Connector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connector.m; sourceTree = "<group>"; };
+		56C86AE017E6A3E3002B9436 /* RFCResponseParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFCResponseParser.h; sourceTree = "<group>"; };
+		56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFCResponseParser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +136,13 @@
 				56A51CDA17E5912A006F9506 /* MasterViewController.m */,
 				56A51CDC17E5912A006F9506 /* DetailViewController.h */,
 				56A51CDD17E5912A006F9506 /* DetailViewController.m */,
+				56A51CFC17E696EF006F9506 /* Document.h */,
+				56A51CFD17E696EF006F9506 /* Document.m */,
+				56C86ADD17E6A276002B9436 /* Connector.h */,
+				56C86ADE17E6A276002B9436 /* Connector.m */,
+				56C86AE017E6A3E3002B9436 /* RFCResponseParser.h */,
+				56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */,
+				56A51CFF17E6975E006F9506 /* Resources */,
 				56A51CC517E59129006F9506 /* Supporting Files */,
 			);
 			path = RFCViewer;
@@ -163,6 +179,13 @@
 				56A51CEE17E5912A006F9506 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		56A51CFF17E6975E006F9506 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -279,6 +302,9 @@
 				56A51CCF17E59129006F9506 /* AppDelegate.m in Sources */,
 				56A51CDB17E5912A006F9506 /* MasterViewController.m in Sources */,
 				56A51CDE17E5912A006F9506 /* DetailViewController.m in Sources */,
+				56A51CFE17E696EF006F9506 /* Document.m in Sources */,
+				56C86ADF17E6A276002B9436 /* Connector.m in Sources */,
+				56C86AE217E6A3E3002B9436 /* RFCResponseParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +485,7 @@
 				56A51CF817E5912A006F9506 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		56A51CF917E5912A006F9506 /* Build configuration list for PBXNativeTarget "RFCViewerTests" */ = {
 			isa = XCConfigurationList;
@@ -467,6 +494,7 @@
 				56A51CFB17E5912A006F9506 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
