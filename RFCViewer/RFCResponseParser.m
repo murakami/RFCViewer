@@ -16,6 +16,7 @@
 - (void)_parse;
 - (void)_notifyParserDidFinishLoading;
 - (void)_notifyParserDidFailWithError:(NSError*)error;
+- (NSError *)_errorWithCode:(NSInteger)code localizedDescription:(NSString *)localizedDescription;
 @end
 
 @implementation RFCResponseParser
@@ -87,6 +88,7 @@
     }
     
     if (! urlRequest) {
+        self.error = [self _errorWithCode:kRFCResponseParserGenericError localizedDescription:@"NSURLRequestの生成に失敗しました。"];
         if (self.completionHandler) {
             self.completionHandler(self);
         }
@@ -110,6 +112,22 @@
 - (void)cancel
 {
     DBGMSG(@"%s", __func__);
+    [self.urlConnection cancel];
+    
+    self.downloadedData = nil;
+    
+    [self willChangeValueForKey:@"networkState"];
+    self.networkState = kRFCNetworkStateCanceled;
+    [self didChangeValueForKey:@"networkState"];
+    
+    if ([self.delegate respondsToSelector:@selector(parserDidCancel:)]) {
+        [self.delegate parserDidCancel:self];
+    }
+    if (self.completionHandler) {
+        self.completionHandler(self);
+    }
+    
+    self.urlConnection = nil;
 }
 
 - (NSDictionary *)indexDictionary
@@ -134,6 +152,13 @@
 
 - (void)_notifyParserDidFailWithError:(NSError*)error
 {
+}
+
+- (NSError *)_errorWithCode:(NSInteger)code localizedDescription:(NSString *)localizedDescription
+{
+    NSDictionary    *userInfo = [NSDictionary dictionaryWithObject:localizedDescription forKey:NSLocalizedDescriptionKey];
+    NSError         *error = [NSError errorWithDomain:@"RFCViewer" code:code userInfo:userInfo];
+    return error;
 }
 
 @end

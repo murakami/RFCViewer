@@ -10,6 +10,9 @@
 
 @class RFCResponseParser;
 
+#define kRFCResponseParserNoError       0
+#define kRFCResponseParserGenericError  1
+
 typedef enum _RFCNetworkState {
     kRFCNetworkStateNotConnected = 0,
     kRFCNetworkStateInProgress,
