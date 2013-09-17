@@ -13,6 +13,7 @@
 
 @implementation RFC
 
+//@synthesize rfcNumber = _rfcNumber;
 @synthesize title = _title;
 @synthesize author1 = _author1;
 @synthesize author2 = _author2;
@@ -28,9 +29,10 @@
 
 - (id)init
 {
-    DBGMSG(@"%s", __func__);
+    //DBGMSG(@"%s", __func__);
     self = [super init];
     if (self) {
+        //_rfcNumber = nil;
         _title = nil;
         _author1 = nil;
         _author2 = nil;
@@ -49,7 +51,8 @@
 
 - (void)dealloc
 {
-    DBGMSG(@"%s", __func__);
+    //DBGMSG(@"%s", __func__);
+    //self.rfcNumber = nil;
     self.title = nil;
     self.author1 = nil;
     self.author2 = nil;
