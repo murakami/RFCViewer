@@ -218,6 +218,7 @@
 	NSString	*parsedString = nil;
 	NSRange		range, subRange;
 	NSUInteger	length;
+    __block BOOL    isCreatedOn = NO;
     BOOL        isIndex = NO;
     NSMutableString *rfcString = nil;
     
@@ -243,10 +244,24 @@
         else {
             parsedString = @"";
         }
-        DBGMSG(@"[%@]", parsedString);
+        //DBGMSG(@"[%@]", parsedString);
+        
+        /* 更新日付に到着 */
+        NSError *error = nil;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\(CREATED ON: (\\d{2}/\\d{2}/\\d{4})\\.\\)"
+                                                                               options:NSRegularExpressionCaseInsensitive
+                                                                                 error:&error];
+        [regex enumerateMatchesInString:parsedString
+                                options:0
+                                  range:NSMakeRange(0, parsedString.length)
+                             usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop) {
+                                 if (match.numberOfRanges) {
+                                     isCreatedOn = YES;
+                                 }
+                             }];
         
         /* 目次に到達 */
-        if ([parsedString isEqualToString:@"RFC INDEX"]) {
+        if ((isCreatedOn) && ([parsedString isEqualToString:@"RFC INDEX"])) {
             isIndex = YES;
         }
         else if (! isIndex) {
@@ -256,9 +271,9 @@
         else if ([parsedString isEqualToString:@""]) {
             if (rfcString) {
                 /* 表題の取り出し */
-                DBGMSG(@"%@", rfcString);
+                //DBGMSG(@"%@", rfcString);
                 NSError *error = nil;
-                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]{4}+)\\s(.+\\.)"
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^([0-9]{4}+)\\s(.+?\\.)"
                                                                                        options:NSRegularExpressionCaseInsensitive
                                                                                          error:&error];
                 __block NSString    *rfcNumber = nil;
@@ -275,7 +290,7 @@
                                      }];
                 RFC *rfc = [[RFC alloc] init];
                 rfc.title = title;
-                DBGMSG(@"%@ : %@", rfcNumber, rfc.title);
+                //DBGMSG(@"%@ : %@", rfcNumber, rfc.title);
                 [dict setObject:rfc forKey:rfcNumber];
             }
             rfcString = nil;
@@ -285,7 +300,7 @@
         else {
             NSRange match = [parsedString rangeOfString:@"^[0-9]{4}+\\s" options:NSRegularExpressionSearch];
             if (match.location != NSNotFound) {
-                DBGMSG(@">>>>先頭");
+                //DBGMSG(@">>>>先頭");
                 rfcString = [[NSMutableString alloc] initWithString:parsedString];
             }
             else if (rfcString) {
@@ -297,10 +312,12 @@
 	}
     self.indexDictionary = dict;
 #if DEBUG
+    /*
     for (NSString *rfcNumber in self.indexDictionary.allKeys) {
         RFC *rfc = [self.indexDictionary objectForKey:rfcNumber];
         NSLog(@"%@ : %@", rfcNumber, rfc.title);
     }
+    */
 #endif  /* DEBUG */
 }
 
