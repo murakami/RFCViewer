@@ -240,6 +240,11 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Bitz Co., Ltd.";
+				TargetAttributes = {
+					56A51CBA17E59129006F9506 = {
+						DevelopmentTeam = XKY95WKF3J;
+					};
+				};
 			};
 			buildConfigurationList = 56A51CB617E59129006F9506 /* Build configuration list for PBXProject "RFCViewer" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -419,10 +424,13 @@
 		56A51CF717E5912A006F9506 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RFCViewer/RFCViewer-Prefix.pch";
 				INFOPLIST_FILE = "RFCViewer/RFCViewer-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -430,10 +438,13 @@
 		56A51CF817E5912A006F9506 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RFCViewer/RFCViewer-Prefix.pch";
 				INFOPLIST_FILE = "RFCViewer/RFCViewer-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
