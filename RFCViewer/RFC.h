@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface RFC : NSObject
-//@property (strong, nonatomic) NSString  *rfcNumber;
+@property (strong, nonatomic) NSString  *rfcNumber;
 @property (strong, nonatomic) NSString  *title;
 @property (strong, nonatomic) NSString  *author1;
 @property (strong, nonatomic) NSString  *author2;
@@ -22,4 +22,5 @@
 @property (strong, nonatomic) NSString  *updatedBy;
 @property (strong, nonatomic) NSString  *alsoFYI;
 @property (strong, nonatomic) NSString  *status;
+@property (strong, nonatomic) NSString  *text;
 @end

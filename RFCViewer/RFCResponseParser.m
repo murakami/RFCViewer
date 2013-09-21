@@ -11,13 +11,13 @@
 
 @interface RFCResponseParser () <NSURLConnectionDataDelegate>
 @property (assign, readwrite, nonatomic) RFCNetworkSate networkState;
-@property (strong, readwrite, nonatomic) NSDictionary   *indexDictionary;
+@property (strong, readwrite, nonatomic) NSArray        *indexArray;
 @property (strong, nonatomic) NSURLConnection           *urlConnection;
 @property (strong, nonatomic) NSMutableData             *downloadedData;
 - (void)_notifyParserDidFinishLoading;
 - (void)_notifyParserDidFailWithError:(NSError*)error;
 - (NSError *)_errorWithCode:(NSInteger)code localizedDescription:(NSString *)localizedDescription;
-- (void)_parseIndexDictionary;
+- (void)_parseIndexArray;
 @end
 
 @implementation RFCResponseParser
@@ -28,7 +28,7 @@
 @synthesize queue = _queue;
 @synthesize delegate = _delegate;
 @synthesize completionHandler = _completionHandler;
-@synthesize indexDictionary = _indexDictionary;
+@synthesize indexArray = _indexArray;
 @synthesize urlConnection = _urlConnection;
 @synthesize downloadedData = _downloadedData;
 
@@ -43,7 +43,7 @@
         _queue = nil;
         _delegate = nil;
         _completionHandler = NULL;
-        _indexDictionary = nil;
+        _indexArray = nil;
         _urlConnection = nil;
         _downloadedData = nil;
     }
@@ -59,7 +59,7 @@
     self.queue = nil;
     self.delegate = nil;
     self.completionHandler = NULL;
-    self.indexDictionary = nil;
+    self.indexArray = nil;
     self.urlConnection = nil;
     self.downloadedData = nil;
 }
@@ -162,7 +162,7 @@
     self.networkState = kRFCNetworkStateFinished;
     [self didChangeValueForKey:@"networkState"];
     
-    [self _parseIndexDictionary];
+    [self _parseIndexArray];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self _notifyParserDidFinishLoading];
@@ -208,11 +208,11 @@
     return error;
 }
 
-- (void)_parseIndexDictionary
+- (void)_parseIndexArray
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
     
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    NSMutableArray  *indexArray = [[NSMutableArray alloc] init];
     
     NSString	*indexString = nil;
 	NSString	*parsedString = nil;
@@ -289,9 +289,10 @@
                                          title = [rfcString substringWithRange:secondHalfRange];
                                      }];
                 RFC *rfc = [[RFC alloc] init];
+                rfc.rfcNumber = rfcNumber;
                 rfc.title = title;
                 //DBGMSG(@"%@ : %@", rfcNumber, rfc.title);
-                [dict setObject:rfc forKey:rfcNumber];
+                [indexArray addObject:rfc];
             }
             rfcString = nil;
         }
@@ -310,15 +311,7 @@
 		range.location = NSMaxRange(subRange);
 		range.length -= subRange.length;
 	}
-    self.indexDictionary = dict;
-#if DEBUG
-    /*
-    for (NSString *rfcNumber in self.indexDictionary.allKeys) {
-        RFC *rfc = [self.indexDictionary objectForKey:rfcNumber];
-        NSLog(@"%@ : %@", rfcNumber, rfc.title);
-    }
-    */
-#endif  /* DEBUG */
+    self.indexArray = indexArray;
 }
 
 @end

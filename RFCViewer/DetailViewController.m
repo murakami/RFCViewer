@@ -6,6 +6,8 @@
 //  Copyright (c) 2013年 Bitz Co., Ltd. All rights reserved.
 //
 
+#import "Document.h"
+#import "Connector.h"
 #import "DetailViewController.h"
 
 @interface DetailViewController ()
@@ -14,38 +16,48 @@
 
 @implementation DetailViewController
 
+@synthesize rfc = _rfc;
+@synthesize rfcTextView = _rfcTextView;
+
 #pragma mark - Managing the detail item
 
-- (void)setDetailItem:(id)newDetailItem
+- (void)setRfc:(RFC *)rfc
 {
-    if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
+    if (_rfc != rfc) {
+        _rfc = rfc;
         
-        // Update the view.
         [self configureView];
     }
 }
 
 - (void)configureView
 {
-    // Update the user interface for the detail item.
-
-    if (self.detailItem) {
-        self.detailDescriptionLabel.text = [self.detailItem description];
+    if (self.rfc) {
+        self.rfcTextView.text = self.rfc.text;
     }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
+    
+    if (self.rfc.text) {
+        [self configureView];
+    }
+    
+    __block DetailViewController * __weak blockWeakSelf = self;
+    [[Connector sharedConnector] rfcWithIndex:[self.rfc.rfcNumber integerValue] completionHandler:^(RFCResponseParser *parser) {
+        DetailViewController *tempSelf = blockWeakSelf;
+        if (! tempSelf) return;
+        
+        tempSelf.rfc.text = parser.rfc;
+        [tempSelf configureView];
+    }];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

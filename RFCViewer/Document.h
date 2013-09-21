@@ -13,6 +13,7 @@
 
 @property (strong, nonatomic) NSString              *version;
 @property (strong, readonly, nonatomic) NSString    *indexUrlString;
+@property (strong, nonatomic) NSArray               *indexArray;
 
 + (Document *)sharedDocument;
 - (void)load;

@@ -20,6 +20,7 @@
 
 @synthesize version = _version;
 @synthesize indexUrlString = _indexUrlString;
+@synthesize indexArray = _indexArray;
 @synthesize baseUrlString = _baseUrlString;
 
 + (Document *)sharedDocument;
@@ -40,6 +41,7 @@
     if (self) {
         _version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
         _indexUrlString = @"http://www.rfc-editor.org/rfc/rfc-index.txt";
+        _indexArray = [[NSArray alloc] init];
         _baseUrlString = @"http://www.ietf.org/rfc";
     }
     return self;
@@ -50,6 +52,7 @@
     DBGMSG(@"%s", __func__);
     self.version = nil;
     self.indexUrlString = nil;
+    self.indexArray = nil;
     self.baseUrlString = nil;
 }
 

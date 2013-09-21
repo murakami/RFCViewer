@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Document.h"
+#import "Connector.h"
 
 @interface DetailViewController : UIViewController
 
-@property (strong, nonatomic) id detailItem;
+@property (strong, nonatomic) RFC   *rfc;
 
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
+@property (weak, nonatomic) IBOutlet UITextView *rfcTextView;
 @end
