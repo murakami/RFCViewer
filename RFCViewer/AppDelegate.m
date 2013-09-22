@@ -7,7 +7,12 @@
 //
 
 #import "Document.h"
+#import "Connector.h"
 #import "AppDelegate.h"
+
+@interface AppDelegate ()
+- (void)_updateNetworkActivity;
+@end
 
 @implementation AppDelegate
 
@@ -15,6 +20,10 @@
 {
     DBGMSG(@"%s", __func__);
     [[Document sharedDocument] load];
+    [[Connector sharedConnector] addObserver:self
+                                  forKeyPath:@"networkAccessing"
+                                     options:0
+                                     context:NULL];
     return YES;
 }
 
@@ -60,6 +69,21 @@
 {
     DBGMSG(@"%s", __func__);
     return NO;
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context
+{
+    if ([keyPath isEqualToString:@"networkAccessing"]) {
+        [self _updateNetworkActivity];
+    }
+}
+
+- (void)_updateNetworkActivity
+{
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = [Connector sharedConnector].networkAccessing;
 }
 
 @end
