@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		56256BB917EFECC0000DB496 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 56256BB717EFECC0000DB496 /* Icon.png */; };
+		56256BBA17EFECC0000DB496 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 56256BB817EFECC0000DB496 /* Icon@2x.png */; };
 		56A51CBF17E59129006F9506 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56A51CBE17E59129006F9506 /* UIKit.framework */; };
 		56A51CC117E59129006F9506 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56A51CC017E59129006F9506 /* Foundation.framework */; };
 		56A51CC317E59129006F9506 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56A51CC217E59129006F9506 /* CoreGraphics.framework */; };
@@ -41,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		56256BB717EFECC0000DB496 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Resources/Icon.png; sourceTree = "<group>"; };
+		56256BB817EFECC0000DB496 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
 		56A51CBB17E59129006F9506 /* RFCViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RFCViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56A51CBE17E59129006F9506 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		56A51CC017E59129006F9506 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -189,6 +193,8 @@
 		56A51CFF17E6975E006F9506 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				56256BB717EFECC0000DB496 /* Icon.png */,
+				56256BB817EFECC0000DB496 /* Icon@2x.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -274,6 +280,8 @@
 				56A51CD317E59129006F9506 /* Default@2x.png in Resources */,
 				56A51CD517E59129006F9506 /* Default-568h@2x.png in Resources */,
 				56A51CD817E5912A006F9506 /* MainStoryboard.storyboard in Resources */,
+				56256BB917EFECC0000DB496 /* Icon.png in Resources */,
+				56256BBA17EFECC0000DB496 /* Icon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,7 +416,8 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -416,6 +425,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -438,13 +449,14 @@
 		56A51CF817E5912A006F9506 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RFCViewer/RFCViewer-Prefix.pch";
 				INFOPLIST_FILE = "RFCViewer/RFCViewer-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

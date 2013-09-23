@@ -12,6 +12,7 @@
 #import "DetailViewController.h"
 
 @interface MasterViewController ()
+- (void)_refreshIndex:(id)sender;
 @end
 
 @implementation MasterViewController
@@ -22,14 +23,27 @@
     [super awakeFromNib];
 }
 
+- (void)dealloc
+{
+    DBGMSG(@"%s", __func__);
+}
+
 - (void)viewDidLoad
 {
     DBGMSG(@"%s", __func__);
     [super viewDidLoad];
     
+    UIRefreshControl    *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(_refreshIndex:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    
+    __block MasterViewController * __weak blockWeakSelf = self;
     [[Connector sharedConnector] rfcIndexWithCompletionHandler:^(RFCResponseParser *parser) {
+        MasterViewController *tempSelf = blockWeakSelf;
+        if (! tempSelf) return;
+        
         [Document sharedDocument].indexArray = parser.indexArray;
-        [self.tableView reloadData];
+        [tempSelf.tableView reloadData];
     }];
 }
 
@@ -113,6 +127,22 @@
         RFC *rfc = [[Document sharedDocument].indexArray objectAtIndex:indexPath.row];
         [[segue destinationViewController] setRfc:rfc];
     }
+}
+
+- (void)_refreshIndex:(id)sender
+{
+    [self.refreshControl beginRefreshing];
+    if (![Connector sharedConnector].networkAccessing) {
+        __block MasterViewController * __weak blockWeakSelf = self;
+        [[Connector sharedConnector] rfcIndexWithCompletionHandler:^(RFCResponseParser *parser) {
+            MasterViewController *tempSelf = blockWeakSelf;
+            if (! tempSelf) return;
+            
+            [Document sharedDocument].indexArray = parser.indexArray;
+            [tempSelf.tableView reloadData];
+        }];
+    }
+    [self.refreshControl endRefreshing];
 }
 
 @end

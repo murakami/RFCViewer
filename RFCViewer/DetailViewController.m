@@ -33,6 +33,7 @@
 - (void)configureView
 {
     if (self.rfc) {
+        self.title = self.rfc.rfcNumber;
         self.rfcTextView.text = self.rfc.text;
     }
 }

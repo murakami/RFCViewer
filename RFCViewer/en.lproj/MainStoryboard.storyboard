@@ -66,7 +66,7 @@
                             <outlet property="delegate" destination="12" id="15"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Master" id="36"/>
+                    <navigationItem key="navigationItem" title="Index" id="36"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="17" sceneMemberID="firstResponder"/>
             </objects>
@@ -97,7 +97,7 @@
                             <constraint firstItem="Qbi-mp-eP5" firstAttribute="leading" secondItem="22" secondAttribute="leading" type="default" id="z9h-vU-gWx"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Detail" id="26"/>
+                    <navigationItem key="navigationItem" title="RFC" id="26"/>
                     <connections>
                         <outlet property="rfcTextView" destination="Qbi-mp-eP5" id="Iai-zV-jbq"/>
                     </connections>
