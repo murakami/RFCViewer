@@ -45,6 +45,7 @@
 /* Begin PBXFileReference section */
 		56256BB717EFECC0000DB496 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Resources/Icon.png; sourceTree = "<group>"; };
 		56256BB817EFECC0000DB496 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
+		56256BBB17F1EC0F000DB496 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		56A51CBB17E59129006F9506 /* RFCViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RFCViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56A51CBE17E59129006F9506 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		56A51CC017E59129006F9506 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -106,6 +107,7 @@
 		56A51CB217E59129006F9506 = {
 			isa = PBXGroup;
 			children = (
+				56256BBB17F1EC0F000DB496 /* README */,
 				56A51CC417E59129006F9506 /* RFCViewer */,
 				56A51CEB17E5912A006F9506 /* RFCViewerTests */,
 				56A51CBD17E59129006F9506 /* Frameworks */,
