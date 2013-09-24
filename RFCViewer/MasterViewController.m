@@ -12,10 +12,14 @@
 #import "DetailViewController.h"
 
 @interface MasterViewController ()
+@property (strong, nonatomic) NSMutableArray    *sectionIndexArray;
 - (void)_refreshIndex:(id)sender;
+- (void)_updateSectionIndexArray;
 @end
 
 @implementation MasterViewController
+
+@synthesize sectionIndexArray = _sectionIndexArray;
 
 - (void)awakeFromNib
 {
@@ -26,12 +30,16 @@
 - (void)dealloc
 {
     DBGMSG(@"%s", __func__);
+    self.sectionIndexArray = nil;
 }
 
 - (void)viewDidLoad
 {
     DBGMSG(@"%s", __func__);
     [super viewDidLoad];
+    
+    if (! self.sectionIndexArray)
+        self.sectionIndexArray = [[NSMutableArray alloc] init];
     
     UIRefreshControl    *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(_refreshIndex:) forControlEvents:UIControlEventValueChanged];
@@ -43,6 +51,7 @@
         if (! tempSelf) return;
         
         [Document sharedDocument].indexArray = parser.indexArray;
+        [tempSelf _updateSectionIndexArray];
         [tempSelf.tableView reloadData];
     }];
 }
@@ -110,6 +119,25 @@
     return [Document sharedDocument].indexArray.count;
 }
 
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+    return self.sectionIndexArray;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    NSInteger   row = 0;
+    for (row = 0; row < [Document sharedDocument].indexArray.count; row++) {
+        RFC *rfc = [[Document sharedDocument].indexArray objectAtIndex:row];
+        if ((index * 1000) <= [rfc.rfcNumber integerValue]) {
+            break;
+        }
+    }
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+    [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    return index;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
@@ -139,10 +167,28 @@
             if (! tempSelf) return;
             
             [Document sharedDocument].indexArray = parser.indexArray;
+            [tempSelf _updateSectionIndexArray];
             [tempSelf.tableView reloadData];
         }];
     }
     [self.refreshControl endRefreshing];
+}
+
+- (void)_updateSectionIndexArray
+{
+    if ((! [Document sharedDocument].indexArray) || ([Document sharedDocument].indexArray.count == 0))
+        return;
+    
+    RFC *rfc = [[Document sharedDocument].indexArray lastObject];
+    NSString    *lastNumberString = rfc.rfcNumber;
+    NSInteger   lastNumber = [lastNumberString integerValue];
+    NSInteger   n = lastNumber / 1000;
+    DBGMSG(@"%s lastNumber(%d) n(%d)", __func__, (int)lastNumber, (int)n);
+    [self.sectionIndexArray removeAllObjects];
+    for (NSInteger i = 0; i <= n; i++) {
+        NSString    *sectionIndex = [[NSString alloc] initWithFormat:@"%04d", (int)(i * 1000)];
+        [self.sectionIndexArray addObject:sectionIndex];
+    }
 }
 
 @end
