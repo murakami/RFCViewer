@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface RFC : NSObject
+@property (strong, readonly, nonatomic) NSString    *identifier;
 @property (strong, nonatomic) NSString  *rfcNumber;
 @property (strong, nonatomic) NSString  *title;
 @property (strong, nonatomic) NSString  *author1;

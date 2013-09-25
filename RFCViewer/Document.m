@@ -14,6 +14,8 @@
 - (void)_clearDefaults;
 - (void)_updateDefaults;
 - (void)_loadDefaults;
+- (NSString*)_modelDir;
+- (NSString*)_modelPath;
 @end
 
 @implementation Document
@@ -60,12 +62,37 @@
 {
     DBGMSG(@"%s", __func__);
     [self _loadDefaults];
+    
+    NSString    *modelPath = [self _modelPath];
+    if ((! modelPath) || (! [[NSFileManager defaultManager] fileExistsAtPath:modelPath])) {
+        return;
+    }
+    
+    NSArray *indexArray;
+    indexArray = [NSKeyedUnarchiver unarchiveObjectWithFile:modelPath];
+    if (indexArray) {
+        self.indexArray = indexArray;
+    }
 }
 
 - (void)save
 {
     DBGMSG(@"%s", __func__);
     [self _updateDefaults];
+    
+    NSFileManager   *fileManager = [NSFileManager defaultManager];
+    
+    NSString    *modelDir = [self _modelDir];
+    if (![fileManager fileExistsAtPath:modelDir]) {
+        NSError *error = nil;
+        [fileManager createDirectoryAtPath:modelDir
+               withIntermediateDirectories:YES
+                                attributes:nil
+                                     error:&error];
+    }
+    
+    NSString    *modelPath = [self _modelPath];
+    [NSKeyedArchiver archiveRootObject:self.indexArray toFile:modelPath];
 }
 
 - (NSString *)rfcUrlStringWithIndex:(NSUInteger)index
@@ -108,6 +135,28 @@
     else {
         /* 読み出し */
     }
+}
+
+
+- (NSString*)_modelDir
+{
+    NSArray*    paths;
+    NSString*   path;
+    paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    if ([paths count] < 1) {
+        return nil;
+    }
+    path = [paths objectAtIndex:0];
+    
+    path = [path stringByAppendingPathComponent:@".model"];
+    return path;
+}
+
+- (NSString*)_modelPath
+{
+    NSString*   path;
+    path = [[self _modelDir] stringByAppendingPathComponent:@"model.dat"];
+    return path;
 }
 
 @end

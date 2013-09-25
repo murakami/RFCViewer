@@ -51,7 +51,8 @@
         DetailViewController *tempSelf = blockWeakSelf;
         if (! tempSelf) return;
         
-        tempSelf.rfc.text = parser.rfc;
+        if (parser.rfc)
+            tempSelf.rfc.text = parser.rfc;
         [tempSelf configureView];
     }];
 }
