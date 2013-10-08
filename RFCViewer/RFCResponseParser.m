@@ -118,6 +118,11 @@
     self.networkState = kRFCNetworkStateCanceled;
     [self didChangeValueForKey:@"networkState"];
     
+    /*
+    if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
+        [self.delegate parserDidCancel:self];
+    }
+    */
     if ([self.delegate respondsToSelector:@selector(parserDidCancel:)]) {
         [self.delegate parserDidCancel:self];
     }
@@ -135,6 +140,13 @@
 - (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    /*
+    if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate parser:self didReceiveResponse:response];
+        });
+    }
+    */
     if ([self.delegate respondsToSelector:@selector(parser:didReceiveResponse:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate parser:self didReceiveResponse:response];
@@ -147,6 +159,13 @@
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
     [self.downloadedData appendData:data];
     
+    /*
+    if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate parser:self didReceiveData:data];
+        });
+    }
+    */
     if ([self.delegate respondsToSelector:@selector(parser:didReceiveData:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate parser:self didReceiveData:data];
@@ -189,6 +208,12 @@
 
 - (void)_notifyParserDidFinishLoading
 {
+    DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    /*
+    if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
+        [self.delegate parserDidFinishLoading:self];
+    }
+    */
     if ([self.delegate respondsToSelector:@selector(parserDidFinishLoading:)]) {
         [self.delegate parserDidFinishLoading:self];
     }
@@ -196,6 +221,12 @@
 
 - (void)_notifyParserDidFailWithError:(NSError*)error
 {
+    DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    /*
+    if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
+        [self.delegate parser:self didFailWithError:error];
+    }
+    */
     if ([self.delegate respondsToSelector:@selector(parser:didFailWithError:)]) {
         [self.delegate parser:self didFailWithError:error];
     }
