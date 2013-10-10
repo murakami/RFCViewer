@@ -60,6 +60,7 @@ NSString    *ConnectorDidFinishRfc = @"ConnectorDidFinishRfc";
 - (void)rfcIndexWithCompletionHandler:(RFCResponseParserCompletionHandler)completionHandler
 {
     DBGMSG(@"%s", __func__);
+    /* インデックスが0だと目次文書と判断させる */
     [self rfcWithIndex:0 completionHandler:completionHandler];
 }
 
@@ -68,14 +69,17 @@ NSString    *ConnectorDidFinishRfc = @"ConnectorDidFinishRfc";
     DBGMSG(@"%s", __func__);
     BOOL    networkAccessing = self.networkAccessing;
     
+    /* パーサのインスタンスを生成 */
     RFCResponseParser   *parser = [[RFCResponseParser alloc] init];
     parser.index = index;
     parser.queue = self.queue;
     parser.delegate = self;
     parser.completionHandler = completionHandler;
     
+    /* 通信開始 */
     [parser parse];
     if (parser.error) {
+        /* 通信開始エラー */
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
         [userInfo setObject:parser forKey:@"parser"];
         [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinishRfc
@@ -87,13 +91,16 @@ NSString    *ConnectorDidFinishRfc = @"ConnectorDidFinishRfc";
         return;
     }
     
+    /* 通信中パーサを配列に格納 */
     [self.parsers addObject:parser];
     
+    /* 通信中インジケータの更新 */
     if (networkAccessing != self.networkAccessing) {
         [self willChangeValueForKey:@"networkAccessing"];
         [self didChangeValueForKey:@"networkAccessing"];
     }
     
+    /* 通信開始を通知 */
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
     [userInfo setObject:parser forKey:@"parser"];
     
@@ -115,6 +122,7 @@ NSString    *ConnectorDidFinishRfc = @"ConnectorDidFinishRfc";
                                                                 object:self
                                                               userInfo:userInfo];
             
+            /* 通信中インジケータの更新 */
             [self willChangeValueForKey:@"networkAccessing"];
             [self.parsers removeObject:parser];
             [self didChangeValueForKey:@"networkAccessing"];
@@ -134,6 +142,7 @@ NSString    *ConnectorDidFinishRfc = @"ConnectorDidFinishRfc";
     
     [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinishRfc object:self userInfo:userInfo];
     
+    /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkAccessing"];
     [self.parsers removeAllObjects];
     [self didChangeValueForKey:@"networkAccessing"];
@@ -179,13 +188,16 @@ NSString    *ConnectorDidFinishRfc = @"ConnectorDidFinishRfc";
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
     [userInfo setObject:parser forKey:@"parser"];
     
+    /* 通信完了を通知（通知センター） */
     [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinishRfc
                                                         object:self
                                                       userInfo:userInfo];
+    /* 通信完了を通知（Blocks） */
     if (parser.completionHandler) {
         parser.completionHandler(parser);
     }
     
+    /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkAccessing"];
     [self.parsers removeObject:parser];
     [self didChangeValueForKey:@"networkAccessing"];

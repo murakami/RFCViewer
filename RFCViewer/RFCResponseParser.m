@@ -69,13 +69,17 @@
     DBGMSG(@"%s", __func__);
     NSString    *urlString = nil;
     
+    /* 通信先 */
     if (self.index == 0) {
+        /* 目次文書 */
         urlString = [Document sharedDocument].indexUrlString;
     }
     else {
+        /* 指定された番号のRFC文書 */
         urlString = [[Document sharedDocument] rfcUrlStringWithIndex:self.index];
     }
     
+    /* URLからNSURLRequestのインスタンスを生成 */
     NSURLRequest    *urlRequest = nil;
     if (urlString) {
         NSURL   *url;
@@ -87,23 +91,28 @@
     DBGMSG(@"%s urlString(%@)", __func__, urlString);
     
     if (! urlRequest) {
+        /* NSURLRequestインスタンスの生成失敗 */
         self.networkState = kRFCNetworkStateError;
         self.error = [self _errorWithCode:kRFCResponseParserGenericError
                      localizedDescription:@"NSURLRequestの生成に失敗しました。"];
         return;
     }
     
+    /* 受信データの格納バッファの用意 */
     self.downloadedData = [[NSMutableData alloc] init];
-        
+    
+    /* NSURLConnectionインスタンスの生成（並列処理の為のキューを設定） */
     self.urlConnection = [[NSURLConnection alloc] initWithRequest:urlRequest
                                                          delegate:self
                                                  startImmediately:NO];
     [self.urlConnection setDelegateQueue:self.queue];
     
+    /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkState"];
     self.networkState = kRFCNetworkStateInProgress;
     [self didChangeValueForKey:@"networkState"];
     
+    /* 通信開始 */
     [self.urlConnection start];
 }
 
@@ -140,6 +149,7 @@
 - (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    /* デリゲートに通知 */
     /*
     if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -148,6 +158,7 @@
     }
     */
     if ([self.delegate respondsToSelector:@selector(parser:didReceiveResponse:)]) {
+        /* 主スレッドで実行させる */
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate parser:self didReceiveResponse:response];
         });
@@ -157,8 +168,11 @@
 - (void)connection:(NSURLConnection*)connection didReceiveData:(NSData*)data
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    
+    /* 受信データをバッファに格納 */
     [self.downloadedData appendData:data];
     
+    /* デリゲートに通知 */
     /*
     if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -167,6 +181,7 @@
     }
     */
     if ([self.delegate respondsToSelector:@selector(parser:didReceiveData:)]) {
+        /* 主スレッドで実行させる */
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate parser:self didReceiveData:data];
         });
@@ -177,12 +192,18 @@
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
     
+    /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkState"];
     self.networkState = kRFCNetworkStateFinished;
     [self didChangeValueForKey:@"networkState"];
     
-    [self _parseIndexArray];
-
+    /* 目次文書 */
+    if (self.index == 0) {
+        /* 受信データのパース */
+        [self _parseIndexArray];
+    }
+    
+    /* 主スレッドで実行させる */
     dispatch_async(dispatch_get_main_queue(), ^{
         [self _notifyParserDidFinishLoading];
     });
@@ -193,12 +214,16 @@
 - (void)connection:(NSURLConnection*)connection didFailWithError:(NSError*)error
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    
+    /* エラー情報を保持 */
     self.error = error;
     
+    /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkState"];
     self.networkState = kRFCNetworkStateError;
     [self didChangeValueForKey:@"networkState"];
     
+    /* 主スレッドで実行させる */
     dispatch_async(dispatch_get_main_queue(), ^{
         [self _notifyParserDidFailWithError:error];
     });
@@ -209,6 +234,7 @@
 - (void)_notifyParserDidFinishLoading
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    /* デリゲートに通知 */
     /*
     if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
         [self.delegate parserDidFinishLoading:self];
@@ -222,6 +248,7 @@
 - (void)_notifyParserDidFailWithError:(NSError*)error
 {
     DBGMSG( @"%s [Main=%@]", __FUNCTION__, [NSThread isMainThread] ? @"YES" : @"NO ");
+    /* デリゲートに通知 */
     /*
     if ([[self.delegate class] conformsToProtocol:@protocol(RFCResponseParserDelegate)]) {
         [self.delegate parser:self didFailWithError:error];

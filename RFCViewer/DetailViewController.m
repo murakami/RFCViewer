@@ -46,8 +46,10 @@
         [self configureView];
     }
     
+    /* RFC文書の取得要求を投げる */
     __block DetailViewController * __weak blockWeakSelf = self;
     [[Connector sharedConnector] rfcWithIndex:[self.rfc.rfcNumber integerValue] completionHandler:^(RFCResponseParser *parser) {
+        /* 応答を受けた際の処理 */
         DetailViewController *tempSelf = blockWeakSelf;
         if (! tempSelf) return;
         
