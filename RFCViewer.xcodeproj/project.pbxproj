@@ -32,6 +32,7 @@
 		56C86ADF17E6A276002B9436 /* Connector.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86ADE17E6A276002B9436 /* Connector.m */; };
 		56C86AE217E6A3E3002B9436 /* RFCResponseParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */; };
 		56C86AE517E73A9E002B9436 /* RFC.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C86AE417E73A9E002B9436 /* RFC.m */; };
+		56E952A9186FC78100586B17 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56E952A8186FC78100586B17 /* Images.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFCResponseParser.m; sourceTree = "<group>"; };
 		56C86AE317E73A9E002B9436 /* RFC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFC.h; sourceTree = "<group>"; };
 		56C86AE417E73A9E002B9436 /* RFC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFC.m; sourceTree = "<group>"; };
+		56E952A8186FC78100586B17 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +160,7 @@
 				56C86AE017E6A3E3002B9436 /* RFCResponseParser.h */,
 				56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */,
 				56A51CFF17E6975E006F9506 /* Resources */,
+				56E952A8186FC78100586B17 /* Images.xcassets */,
 				56A51CC517E59129006F9506 /* Supporting Files */,
 			);
 			path = RFCViewer;
@@ -284,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56A51CC917E59129006F9506 /* InfoPlist.strings in Resources */,
+				56E952A9186FC78100586B17 /* Images.xcassets in Resources */,
 				56A51CD117E59129006F9506 /* Default.png in Resources */,
 				56A51CD317E59129006F9506 /* Default@2x.png in Resources */,
 				56A51CD517E59129006F9506 /* Default-568h@2x.png in Resources */,
@@ -446,6 +450,8 @@
 		56A51CF717E5912A006F9506 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -460,6 +466,8 @@
 		56A51CF817E5912A006F9506 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
