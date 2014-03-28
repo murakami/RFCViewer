@@ -6,8 +6,8 @@
 //  Copyright (c) 2013年 Bitz Co., Ltd. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface RFCViewerTests : SenTestCase
+@interface RFCViewerTests : XCTestCase
 
 @end

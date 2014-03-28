@@ -26,7 +26,7 @@
 
 - (void)testExample
 {
-    STFail(@"Unit tests are not implemented yet in RFCViewerTests");
+    XCTFail(@"Unit tests are not implemented yet in RFCViewerTests");
 }
 
 @end
