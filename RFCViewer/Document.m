@@ -97,7 +97,7 @@
 
 - (NSString *)rfcUrlStringWithIndex:(NSUInteger)index
 {
-    NSString *urlString = [[NSString alloc] initWithFormat:@"%@/rfc%04lu.txt", self.baseUrlString, (unsigned long)index];
+    NSString *urlString = [[NSString alloc] initWithFormat:@"%@/rfc%04u.txt", self.baseUrlString, (unsigned int)index];
     return urlString;
 }
 

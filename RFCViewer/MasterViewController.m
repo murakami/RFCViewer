@@ -12,13 +12,18 @@
 #import "DetailViewController.h"
 
 @interface MasterViewController ()
+
+@property (strong, nonatomic) UIBarButtonItem   *refreshItem;
 @property (strong, nonatomic) NSMutableArray    *sectionIndexArray;
+- (void)_refresh:(id)sender;
 - (void)_refreshIndex:(id)sender;
 - (void)_updateSectionIndexArray;
+- (void)_updateNavigationItem:(BOOL)animated;
 @end
 
 @implementation MasterViewController
 
+@synthesize refreshItem = _refreshItem;
 @synthesize sectionIndexArray = _sectionIndexArray;
 
 - (void)awakeFromNib
@@ -30,6 +35,7 @@
 - (void)dealloc
 {
     DBGMSG(@"%s", __func__);
+    self.refreshItem = nil;
     self.sectionIndexArray = nil;
 }
 
@@ -37,6 +43,10 @@
 {
     DBGMSG(@"%s", __func__);
     [super viewDidLoad];
+    
+    self.refreshItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:(UIBarButtonSystemItemRefresh)
+                                                                     target:self
+                                                                     action:@selector(_refresh:)];
     
     if (! self.sectionIndexArray)
         self.sectionIndexArray = [[NSMutableArray alloc] init];
@@ -60,6 +70,8 @@
 {
     DBGMSG(@"%s", __func__);
     [super viewWillAppear:animated];
+    
+    [self _updateNavigationItem:animated];
 }
 
 - (void)viewWillLayoutSubviews
@@ -157,6 +169,21 @@
     }
 }
 
+- (void)_refresh:(id)sender
+{
+    if (![Connector sharedConnector].networkAccessing) {
+        __block MasterViewController * __weak blockWeakSelf = self;
+        [[Connector sharedConnector] rfcIndexWithCompletionHandler:^(RFCResponseParser *parser) {
+            MasterViewController *tempSelf = blockWeakSelf;
+            if (! tempSelf) return;
+            
+            [Document sharedDocument].indexArray = parser.indexArray;
+            [tempSelf _updateSectionIndexArray];
+            [tempSelf.tableView reloadData];
+        }];
+    }
+}
+
 - (void)_refreshIndex:(id)sender
 {
     [self.refreshControl beginRefreshing];
@@ -189,6 +216,11 @@
         NSString    *sectionIndex = [[NSString alloc] initWithFormat:@"%04d", (int)(i * 1000)];
         [self.sectionIndexArray addObject:sectionIndex];
     }
+}
+
+- (void)_updateNavigationItem:(BOOL)animated
+{
+    [self.navigationItem setRightBarButtonItem:self.refreshItem animated:animated];
 }
 
 @end
