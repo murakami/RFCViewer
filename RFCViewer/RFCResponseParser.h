@@ -38,7 +38,7 @@ typedef void (^RFCResponseParserCompletionHandler)(RFCResponseParser *parser);
 @property (strong, nonatomic) NSError                           *error;
 @property (strong, nonatomic) NSOperationQueue                  *queue;
 @property (weak, nonatomic) id<RFCResponseParserDelegate>       delegate;
-@property (copy, nonatomic)RFCResponseParserCompletionHandler   completionHandler;
+@property (copy, nonatomic) RFCResponseParserCompletionHandler  completionHandler;
 @property (strong, readonly, nonatomic) NSArray                 *indexArray;
 @property (strong, readonly, nonatomic) NSString                *rfc;
 
