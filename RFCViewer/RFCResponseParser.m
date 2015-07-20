@@ -10,10 +10,10 @@
 #import "RFCResponseParser.h"
 
 @interface RFCResponseParser () <NSURLConnectionDataDelegate>
-@property (assign, readwrite, nonatomic) RFCNetworkSate networkState;
-@property (strong, readwrite, nonatomic) NSArray        *indexArray;
-@property (strong, nonatomic) NSURLConnection           *urlConnection;
-@property (strong, nonatomic) NSMutableData             *downloadedData;
+@property (assign, readwrite, nonatomic) ResponseParserNetworkSate   networkState;
+@property (strong, readwrite, nonatomic) NSArray                    *indexArray;
+@property (strong, nonatomic) NSURLConnection                       *urlConnection;
+@property (strong, nonatomic) NSMutableData                         *downloadedData;
 - (void)_notifyParserDidFinishLoading;
 - (void)_notifyParserDidFailWithError:(NSError*)error;
 - (NSError *)_errorWithCode:(NSInteger)code localizedDescription:(NSString *)localizedDescription;
@@ -37,7 +37,7 @@
     DBGMSG(@"%s", __func__);
     self = [super init];
     if (self) {
-        _networkState = kRFCNetworkStateNotConnected;
+        _networkState = ResponseParserNetworkSateNotConnected;
         _index = 0;
         _error = nil;
         _queue = nil;
@@ -53,7 +53,7 @@
 - (void)dealloc
 {
     DBGMSG(@"%s", __func__);
-    self.networkState = kRFCNetworkStateNotConnected;
+    self.networkState = ResponseParserNetworkSateNotConnected;
     self.index = 0;
     self.error = nil;
     self.queue = nil;
@@ -92,8 +92,8 @@
     
     if (! urlRequest) {
         /* NSURLRequestインスタンスの生成失敗 */
-        self.networkState = kRFCNetworkStateError;
-        self.error = [self _errorWithCode:kRFCResponseParserGenericError
+        self.networkState = ResponseParserNetworkSateError;
+        self.error = [self _errorWithCode:kResponseParserGenericError
                      localizedDescription:@"NSURLRequestの生成に失敗しました。"];
         return;
     }
@@ -109,7 +109,7 @@
     
     /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkState"];
-    self.networkState = kRFCNetworkStateInProgress;
+    self.networkState = ResponseParserNetworkSateInProgress;
     [self didChangeValueForKey:@"networkState"];
     
     /* 通信開始 */
@@ -124,7 +124,7 @@
     self.downloadedData = nil;
     
     [self willChangeValueForKey:@"networkState"];
-    self.networkState = kRFCNetworkStateCanceled;
+    self.networkState = ResponseParserNetworkSateCanceled;
     [self didChangeValueForKey:@"networkState"];
     
     /*
@@ -194,7 +194,7 @@
     
     /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkState"];
-    self.networkState = kRFCNetworkStateFinished;
+    self.networkState = ResponseParserNetworkSateFinished;
     [self didChangeValueForKey:@"networkState"];
     
     /* 目次文書 */
@@ -220,7 +220,7 @@
     
     /* 通信中インジケータの更新 */
     [self willChangeValueForKey:@"networkState"];
-    self.networkState = kRFCNetworkStateError;
+    self.networkState = ResponseParserNetworkSateError;
     [self didChangeValueForKey:@"networkState"];
     
     /* 主スレッドで実行させる */

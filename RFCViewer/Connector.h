@@ -7,19 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RFCResponseParser.h"
+#import "ResponseParserProtocol.h"
 
-extern NSString *ConnectorDidBeginRfc;
-extern NSString *ConnectorInProgressRfc;
-extern NSString *ConnectorDidFinishRfc;
+extern NSString *ConnectorDidBegin;
+extern NSString *ConnectorInProgress;
+extern NSString *ConnectorDidFinish;
 
 @interface Connector : NSObject
 
 @property (assign, readonly, nonatomic, getter=isNetworkAccessing) BOOL networkAccessing;
 
 + (Connector *)sharedConnector;
-- (void)rfcIndexWithCompletionHandler:(RFCResponseParserCompletionHandler)completionHandler;
-- (void)rfcWithIndex:(NSUInteger)index completionHandler:(RFCResponseParserCompletionHandler)completionHandler;
+- (void)requestWithParams:(NSDictionary *)params completionHandler:(ResponseParserCompletionHandler)completionHandler;
 - (void)cancelWithIndex:(NSUInteger)index;
 - (void)cancelAll;
 

@@ -48,6 +48,7 @@
 		56256BB717EFECC0000DB496 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Resources/Icon.png; sourceTree = "<group>"; };
 		56256BB817EFECC0000DB496 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
 		56256BBB17F1EC0F000DB496 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		569D38AB1B5CF1B200C4E11D /* ResponseParserProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResponseParserProtocol.h; sourceTree = "<group>"; };
 		56A51CBB17E59129006F9506 /* RFCViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RFCViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56A51CBE17E59129006F9506 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		56A51CC017E59129006F9506 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -153,6 +154,7 @@
 				56C86AE417E73A9E002B9436 /* RFC.m */,
 				56C86ADD17E6A276002B9436 /* Connector.h */,
 				56C86ADE17E6A276002B9436 /* Connector.m */,
+				569D38AB1B5CF1B200C4E11D /* ResponseParserProtocol.h */,
 				56C86AE017E6A3E3002B9436 /* RFCResponseParser.h */,
 				56C86AE117E6A3E3002B9436 /* RFCResponseParser.m */,
 				56A51CFF17E6975E006F9506 /* Resources */,
@@ -410,7 +412,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -436,7 +437,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
