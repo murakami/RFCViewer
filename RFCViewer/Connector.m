@@ -9,15 +9,22 @@
 #import "Connector.h"
 #import "RFCResponseParser.h"
 
-NSString    *ConnectorDidBegin      = @"ConnectorDidBegin";
-NSString    *ConnectorInProgress    = @"ConnectorInProgress";
-NSString    *ConnectorDidFinish     = @"ConnectorDidFinish";
+NSString *ConnectorDidBegin         = @"ConnectorDidBegin";
+NSString *ConnectorInProgress       = @"ConnectorInProgress";
+NSString *ConnectorDidFinish        = @"ConnectorDidFinish";
+NSString *ConnectorParser           = @"parser";
+NSString *ConnectorParsers          = @"parsers";
+NSString *ConnectorNetworkAccessing = @"networkAccessing";
 
 @interface Connector () <ResponseParserDelegate>
 @property (strong, nonatomic) NSOperationQueue  *queue;
 @property (strong, nonatomic) NSMutableArray    *parsers;
 - (void)_rfcIndexWithCompletionHandler:(ResponseParserCompletionHandler)completionHandler;
 - (void)_rfcWithIndex:(NSUInteger)index completionHandler:(ResponseParserCompletionHandler)completionHandler;
+- (id<ResponseParserProtocol>)_parserWithParam:(NSDictionary *)param
+                                         queue:(NSOperationQueue *)queue
+                                      delegate:(id<ResponseParserDelegate>)delegate
+                             completionHandler:(ResponseParserCompletionHandler)completionHandler;
 - (void)_notifyRfcStatusWithParser:(RFCResponseParser *)parser;
 @end
 
@@ -89,7 +96,7 @@ NSString    *ConnectorDidFinish     = @"ConnectorDidFinish";
     if (parser.error) {
         /* 通信開始エラー */
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-        [userInfo setObject:parser forKey:@"parser"];
+        [userInfo setObject:parser forKey:ConnectorParser];
         [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinish
                                                             object:self
                                                           userInfo:userInfo];
@@ -104,15 +111,25 @@ NSString    *ConnectorDidFinish     = @"ConnectorDidFinish";
     
     /* 通信中インジケータの更新 */
     if (networkAccessing != self.networkAccessing) {
-        [self willChangeValueForKey:@"networkAccessing"];
-        [self didChangeValueForKey:@"networkAccessing"];
+        [self willChangeValueForKey:ConnectorNetworkAccessing];
+        [self didChangeValueForKey:ConnectorNetworkAccessing];
     }
     
     /* 通信開始を通知 */
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    [userInfo setObject:parser forKey:@"parser"];
+    [userInfo setObject:parser forKey:ConnectorParser];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidBegin object:self userInfo:userInfo];
+}
+
+- (id<ResponseParserProtocol>)_parserWithParam:(NSDictionary *)param
+                                         queue:(NSOperationQueue *)queue
+                                      delegate:(id<ResponseParserDelegate>)delegate
+                             completionHandler:(ResponseParserCompletionHandler)completionHandler
+{
+    DBGMSG(@"%s", __func__);
+    RFCResponseParser   *parser = [[RFCResponseParser alloc] init];
+    return parser;
 }
 
 - (void)cancelWithIndex:(NSUInteger)index
@@ -124,18 +141,23 @@ NSString    *ConnectorDidFinish     = @"ConnectorDidFinish";
             [parser cancel];
             
             NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-            [userInfo setObject:parser forKey:@"parser"];
+            [userInfo setObject:parser forKey:ConnectorParser];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinish
                                                                 object:self
                                                               userInfo:userInfo];
             
             /* 通信中インジケータの更新 */
-            [self willChangeValueForKey:@"networkAccessing"];
+            [self willChangeValueForKey:ConnectorNetworkAccessing];
             [self.parsers removeObject:parser];
-            [self didChangeValueForKey:@"networkAccessing"];
+            [self didChangeValueForKey:ConnectorNetworkAccessing];
         }
     }
+}
+
+- (void)cancelWithResponseParser:(id<ResponseParserProtocol>)aParser
+{
+    DBGMSG(@"%s", __func__);
 }
 
 - (void)cancelAll
@@ -146,14 +168,14 @@ NSString    *ConnectorDidFinish     = @"ConnectorDidFinish";
     }
     
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    [userInfo setObject:self.parsers forKey:@"parsers"];
+    [userInfo setObject:self.parsers forKey:ConnectorParsers];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinish object:self userInfo:userInfo];
     
     /* 通信中インジケータの更新 */
-    [self willChangeValueForKey:@"networkAccessing"];
+    [self willChangeValueForKey:ConnectorNetworkAccessing];
     [self.parsers removeAllObjects];
-    [self didChangeValueForKey:@"networkAccessing"];
+    [self didChangeValueForKey:ConnectorNetworkAccessing];
 }
 
 - (void)parser:(RFCResponseParser*)parser didReceiveResponse:(NSURLResponse*)response
@@ -194,7 +216,7 @@ NSString    *ConnectorDidFinish     = @"ConnectorDidFinish";
 {
     DBGMSG(@"%s", __func__);
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    [userInfo setObject:parser forKey:@"parser"];
+    [userInfo setObject:parser forKey:ConnectorParser];
     
     /* 通信完了を通知（通知センター） */
     [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinish
@@ -206,9 +228,9 @@ NSString    *ConnectorDidFinish     = @"ConnectorDidFinish";
     }
     
     /* 通信中インジケータの更新 */
-    [self willChangeValueForKey:@"networkAccessing"];
+    [self willChangeValueForKey:ConnectorNetworkAccessing];
     [self.parsers removeObject:parser];
-    [self didChangeValueForKey:@"networkAccessing"];
+    [self didChangeValueForKey:ConnectorNetworkAccessing];
 }
 
 @end

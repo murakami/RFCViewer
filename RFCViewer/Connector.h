@@ -12,6 +12,9 @@
 extern NSString *ConnectorDidBegin;
 extern NSString *ConnectorInProgress;
 extern NSString *ConnectorDidFinish;
+extern NSString *ConnectorParser;
+extern NSString *ConnectorParsers;
+extern NSString *ConnectorNetworkAccessing;
 
 @interface Connector : NSObject
 
@@ -20,6 +23,7 @@ extern NSString *ConnectorDidFinish;
 + (Connector *)sharedConnector;
 - (void)requestWithParams:(NSDictionary *)params completionHandler:(ResponseParserCompletionHandler)completionHandler;
 - (void)cancelWithIndex:(NSUInteger)index;
+- (void)cancelWithResponseParser:(id<ResponseParserProtocol>)aParser;
 - (void)cancelAll;
 
 @end
