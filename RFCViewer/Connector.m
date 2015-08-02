@@ -9,12 +9,12 @@
 #import "Connector.h"
 #import "RFCResponseParser.h"
 
-NSString *ConnectorDidBegin         = @"ConnectorDidBegin";
-NSString *ConnectorInProgress       = @"ConnectorInProgress";
-NSString *ConnectorDidFinish        = @"ConnectorDidFinish";
-NSString *ConnectorParser           = @"parser";
-NSString *ConnectorParsers          = @"parsers";
-NSString *ConnectorNetworkAccessing = @"networkAccessing";
+NSString * const ConnectorDidBegin         = @"ConnectorDidBegin";
+NSString * const ConnectorInProgress       = @"ConnectorInProgress";
+NSString * const ConnectorDidFinish        = @"ConnectorDidFinish";
+NSString * const ConnectorParser           = @"parser";
+NSString * const ConnectorParsers          = @"parsers";
+NSString * const ConnectorNetworkAccessing = @"networkAccessing";
 
 @interface Connector () <ResponseParserDelegate>
 @property (strong, nonatomic) NSOperationQueue  *queue;

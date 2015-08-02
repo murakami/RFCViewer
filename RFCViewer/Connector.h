@@ -9,12 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "ResponseParserProtocol.h"
 
-extern NSString *ConnectorDidBegin;
-extern NSString *ConnectorInProgress;
-extern NSString *ConnectorDidFinish;
-extern NSString *ConnectorParser;
-extern NSString *ConnectorParsers;
-extern NSString *ConnectorNetworkAccessing;
+extern NSString * const ConnectorDidBegin;
+extern NSString * const ConnectorInProgress;
+extern NSString * const ConnectorDidFinish;
+extern NSString * const ConnectorParser;
+extern NSString * const ConnectorParsers;
+extern NSString * const ConnectorNetworkAccessing;
 
 @interface Connector : NSObject
 
