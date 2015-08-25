@@ -8,6 +8,7 @@
 
 #import "Document.h"
 #import "Connector.h"
+#import "RFCResponseParser.h"
 #import "DetailViewController.h"
 
 @interface DetailViewController ()
@@ -48,13 +49,17 @@
     
     /* RFC文書の取得要求を投げる */
     __block DetailViewController * __weak blockWeakSelf = self;
-    [[Connector sharedConnector] rfcWithIndex:[self.rfc.rfcNumber integerValue] completionHandler:^(RFCResponseParser *parser) {
+    [[Connector sharedConnector] requestWithParams:@{ConnectorRequestTypeKey: ConnectorRequestTypeRFCIndex,
+                                                         ConnectorRFCIndexKey: self.rfc.rfcNumber}
+                                     completionHandler:^(id<ResponseParserProtocol> parser) {
         /* 応答を受けた際の処理 */
         DetailViewController *tempSelf = blockWeakSelf;
         if (! tempSelf) return;
         
-        if (parser.rfc)
-            tempSelf.rfc.text = parser.rfc;
+        RFCResponseParser *rfcResponseParser = parser;
+        if (parser && rfcResponseParser.rfc) {
+            tempSelf.rfc.text = rfcResponseParser.rfc;
+        }
         [tempSelf configureView];
     }];
 }

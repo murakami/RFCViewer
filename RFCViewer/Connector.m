@@ -9,22 +9,26 @@
 #import "Connector.h"
 #import "RFCResponseParser.h"
 
-NSString * const ConnectorDidBegin         = @"ConnectorDidBegin";
-NSString * const ConnectorInProgress       = @"ConnectorInProgress";
-NSString * const ConnectorDidFinish        = @"ConnectorDidFinish";
-NSString * const ConnectorParser           = @"parser";
-NSString * const ConnectorParsers          = @"parsers";
-NSString * const ConnectorNetworkAccessing = @"networkAccessing";
+NSString * const ConnectorDidBegin              = @"ConnectorDidBegin";
+NSString * const ConnectorInProgress            = @"ConnectorInProgress";
+NSString * const ConnectorDidFinish             = @"ConnectorDidFinish";
+NSString * const ConnectorParser                = @"parser";
+NSString * const ConnectorParsers               = @"parsers";
+NSString * const ConnectorNetworkAccessing      = @"networkAccessing";
+
+NSString * const ConnectorRequestTypeKey        = @"ConnectorRequestTypeKey";
+NSString * const ConnectorRequestTypeRFCIndex   = @"ConnectorRequestTypeRFCIndex";
+NSString * const ConnectorRequestTypeRFC        = @"ConnectorRequestTypeRFC";
+
+NSString * const ConnectorRFCIndexKey           = @"ConnectorRFCIndexKey";
 
 @interface Connector () <ResponseParserDelegate>
 @property (strong, nonatomic) NSOperationQueue  *queue;
 @property (strong, nonatomic) NSMutableArray    *parsers;
-- (void)_rfcIndexWithCompletionHandler:(ResponseParserCompletionHandler)completionHandler;
-- (void)_rfcWithIndex:(NSUInteger)index completionHandler:(ResponseParserCompletionHandler)completionHandler;
-- (id<ResponseParserProtocol>)_parserWithParam:(NSDictionary *)param
-                                         queue:(NSOperationQueue *)queue
-                                      delegate:(id<ResponseParserDelegate>)delegate
-                             completionHandler:(ResponseParserCompletionHandler)completionHandler;
+- (id<ResponseParserProtocol>)_parserWithParams:(NSDictionary *)params
+                                          queue:(NSOperationQueue *)queue
+                                       delegate:(id<ResponseParserDelegate>)delegate
+                              completionHandler:(ResponseParserCompletionHandler)completionHandler;
 - (void)_notifyRfcStatusWithParser:(RFCResponseParser *)parser;
 @end
 
@@ -70,6 +74,55 @@ NSString * const ConnectorNetworkAccessing = @"networkAccessing";
 - (void)requestWithParams:(NSDictionary *)params completionHandler:(ResponseParserCompletionHandler)completionHandler
 {
     DBGMSG(@"%s", __func__);
+    BOOL    networkAccessing = self.networkAccessing;
+    
+    /* パーサのインスタンスを生成 */
+    id<ResponseParserProtocol>  parser = [self _parserWithParams:params
+                                                           queue:self.queue
+                                                        delegate:self
+                                               completionHandler:completionHandler];
+    if (! parser) {
+        /* パーサのインスタンスを生成エラー */
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+        [userInfo setObject:[NSNull null] forKey:ConnectorParser];
+        [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinish
+                                                            object:self
+                                                          userInfo:userInfo];
+        if (parser.completionHandler) {
+            parser.completionHandler(nil);
+        }
+        return;
+    }
+    
+    /* 通信開始 */
+    [parser parse];
+    if (parser.error) {
+        /* 通信開始エラー */
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+        [userInfo setObject:parser forKey:ConnectorParser];
+        [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidFinish
+                                                            object:self
+                                                          userInfo:userInfo];
+        if (parser.completionHandler) {
+            parser.completionHandler(parser);
+        }
+        return;
+    }
+    
+    /* 通信中パーサを配列に格納 */
+    [self.parsers addObject:parser];
+    
+    /* 通信中インジケータの更新 */
+    if (networkAccessing != self.networkAccessing) {
+        [self willChangeValueForKey:ConnectorNetworkAccessing];
+        [self didChangeValueForKey:ConnectorNetworkAccessing];
+    }
+    
+    /* 通信開始を通知 */
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    [userInfo setObject:parser forKey:ConnectorParser];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidBegin object:self userInfo:userInfo];
 }
 
 - (void)_rfcIndexWithCompletionHandler:(ResponseParserCompletionHandler)completionHandler
@@ -122,13 +175,38 @@ NSString * const ConnectorNetworkAccessing = @"networkAccessing";
     [[NSNotificationCenter defaultCenter] postNotificationName:ConnectorDidBegin object:self userInfo:userInfo];
 }
 
-- (id<ResponseParserProtocol>)_parserWithParam:(NSDictionary *)param
-                                         queue:(NSOperationQueue *)queue
-                                      delegate:(id<ResponseParserDelegate>)delegate
-                             completionHandler:(ResponseParserCompletionHandler)completionHandler
+- (id<ResponseParserProtocol>)_parserWithParams:(NSDictionary *)params
+                                          queue:(NSOperationQueue *)queue
+                                       delegate:(id<ResponseParserDelegate>)delegate
+                              completionHandler:(ResponseParserCompletionHandler)completionHandler
 {
     DBGMSG(@"%s", __func__);
-    RFCResponseParser   *parser = [[RFCResponseParser alloc] init];
+    id<ResponseParserProtocol> parser = nil;
+    
+    if (params) {
+        NSString    *request = params[ConnectorRequestTypeKey];
+        if (request && [request isEqualToString:ConnectorRequestTypeRFCIndex]) {
+            RFCResponseParser *rfcResponseParser = [[RFCResponseParser alloc] init];
+            rfcResponseParser.index = 0;
+            rfcResponseParser.queue = self.queue;
+            rfcResponseParser.delegate = self;
+            rfcResponseParser.completionHandler = completionHandler;
+            parser = rfcResponseParser;
+        }
+        else if (request && [request isEqualToString:ConnectorRequestTypeRFC]) {
+            RFCResponseParser *rfcResponseParser = [[RFCResponseParser alloc] init];
+            NSUInteger  index = 1;
+            NSNumber    *indexNumber = params[ConnectorRFCIndexKey];
+            if (indexNumber && [indexNumber isKindOfClass:[NSNumber class]]) {
+                index = indexNumber.unsignedIntegerValue;
+            }
+            rfcResponseParser.index = index;
+            rfcResponseParser.queue = self.queue;
+            rfcResponseParser.delegate = self;
+            rfcResponseParser.completionHandler = completionHandler;
+            parser = rfcResponseParser;
+        }
+    }
     return parser;
 }
 
@@ -156,6 +234,11 @@ NSString * const ConnectorNetworkAccessing = @"networkAccessing";
 }
 
 - (void)cancelWithResponseParser:(id<ResponseParserProtocol>)aParser
+{
+    DBGMSG(@"%s", __func__);
+}
+
+- (void)cancelWithParams:(NSDictionary *)params
 {
     DBGMSG(@"%s", __func__);
 }

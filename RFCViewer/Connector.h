@@ -16,14 +16,20 @@ extern NSString * const ConnectorParser;
 extern NSString * const ConnectorParsers;
 extern NSString * const ConnectorNetworkAccessing;
 
+extern NSString * const ConnectorRequestTypeKey;
+extern NSString * const ConnectorRequestTypeRFCIndex;
+extern NSString * const ConnectorRequestTypeRFC;
+
+extern NSString * const ConnectorRFCIndexKey;
+
 @interface Connector : NSObject
 
 @property (assign, readonly, nonatomic, getter=isNetworkAccessing) BOOL networkAccessing;
 
 + (Connector *)sharedConnector;
 - (void)requestWithParams:(NSDictionary *)params completionHandler:(ResponseParserCompletionHandler)completionHandler;
-- (void)cancelWithIndex:(NSUInteger)index;
 - (void)cancelWithResponseParser:(id<ResponseParserProtocol>)aParser;
+- (void)cancelWithParams:(NSDictionary *)params;
 - (void)cancelAll;
 
 @end

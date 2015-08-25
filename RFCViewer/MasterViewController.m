@@ -8,6 +8,7 @@
 
 #import "Document.h"
 #import "Connector.h"
+#import "RFCResponseParser.h"
 #import "MasterViewController.h"
 #import "DetailViewController.h"
 
@@ -56,11 +57,15 @@
     self.refreshControl = refreshControl;
     
     __block MasterViewController * __weak blockWeakSelf = self;
-    [[Connector sharedConnector] rfcIndexWithCompletionHandler:^(RFCResponseParser *parser) {
+    [[Connector sharedConnector] requestWithParams:@{ConnectorRequestTypeKey: ConnectorRequestTypeRFCIndex}
+                                 completionHandler:^(id<ResponseParserProtocol> parser) {
         MasterViewController *tempSelf = blockWeakSelf;
         if (! tempSelf) return;
         
-        [Document sharedDocument].indexArray = parser.indexArray;
+        if (parser) {
+            RFCResponseParser *rfcResponseParser = parser;
+            [Document sharedDocument].indexArray = rfcResponseParser.indexArray;
+        }
         [tempSelf _updateSectionIndexArray];
         [tempSelf.tableView reloadData];
     }];
@@ -173,11 +178,15 @@
 {
     if (![Connector sharedConnector].networkAccessing) {
         __block MasterViewController * __weak blockWeakSelf = self;
-        [[Connector sharedConnector] rfcIndexWithCompletionHandler:^(RFCResponseParser *parser) {
+        [[Connector sharedConnector] requestWithParams:@{ConnectorRequestTypeKey: ConnectorRequestTypeRFCIndex}
+                                     completionHandler:^(id<ResponseParserProtocol> parser) {
             MasterViewController *tempSelf = blockWeakSelf;
             if (! tempSelf) return;
             
-            [Document sharedDocument].indexArray = parser.indexArray;
+            if (parser) {
+                RFCResponseParser *rfcResponseParser = parser;
+                [Document sharedDocument].indexArray = rfcResponseParser.indexArray;
+            }
             [tempSelf _updateSectionIndexArray];
             [tempSelf.tableView reloadData];
         }];
@@ -189,11 +198,15 @@
     [self.refreshControl beginRefreshing];
     if (![Connector sharedConnector].networkAccessing) {
         __block MasterViewController * __weak blockWeakSelf = self;
-        [[Connector sharedConnector] rfcIndexWithCompletionHandler:^(RFCResponseParser *parser) {
+        [[Connector sharedConnector] requestWithParams:@{ConnectorRequestTypeKey: ConnectorRequestTypeRFCIndex}
+                                     completionHandler:^(id<ResponseParserProtocol> parser) {
             MasterViewController *tempSelf = blockWeakSelf;
             if (! tempSelf) return;
             
-            [Document sharedDocument].indexArray = parser.indexArray;
+            if (parser) {
+                RFCResponseParser *rfcResponseParser = parser;
+                [Document sharedDocument].indexArray = rfcResponseParser.indexArray;
+            }
             [tempSelf _updateSectionIndexArray];
             [tempSelf.tableView reloadData];
         }];
